@@ -198,8 +198,7 @@
                                 <span class="meta">{{ (img.size / 1024) | round(1) }} KB</span>
                             </div>
                             <div class="actions">
-                                <form method="POST" action="{{ url_for('delete', blob_name=img.name) }}"
-                                      onsubmit="return confirm('Delete this image?')">
+                                <form class="delete-form" method="POST" action="{{ url_for('delete', blob_name=img.name) }}">
                                     <button type="submit" class="btn btn-danger">🗑 Delete</button>
                                 </form>
                             </div>
@@ -238,6 +237,12 @@
                 input.files = files;
                 fileNameEl.textContent = files[0].name;
             }
+        });
+
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', e => {
+                if (!confirm('Delete this image?')) e.preventDefault();
+            });
         });
     </script>
 </body>

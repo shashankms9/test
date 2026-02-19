@@ -1,9 +1,12 @@
+import logging
 import os
 import uuid
 from flask import Flask, render_template, request, redirect, url_for, flash
 from azure.storage.blob import BlobServiceClient, ContentSettings
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
+
+logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
@@ -55,7 +58,8 @@ def list_uploaded_images():
                 }
             )
         return blobs
-    except Exception:
+    except Exception as exc:
+        logging.warning("Could not list blobs: %s", exc)
         return []
 
 
@@ -105,7 +109,7 @@ def upload():
         blob_client = container_client.get_blob_client(unique_filename)
 
         blob_client.upload_blob(
-            file.read(),
+            file.stream,
             overwrite=True,
             content_settings=ContentSettings(content_type=content_type),
         )
